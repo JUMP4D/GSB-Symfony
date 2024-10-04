@@ -1,0 +1,5 @@
+[{"id":"CL","libelle":"Saisie clôturée"},
+{"id":"CR","libelle":"Fiche créée, saisie en cours"},
+{"id":"RB","libelle":"Remboursée"},
+{"id":"VA","libelle":"Validée et mise en paiement"}
+]
