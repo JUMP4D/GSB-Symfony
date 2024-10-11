@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\FicheFrais;
 use App\Entity\FraisForfait;
+use App\Entity\LigneFraisForfait;
 use App\Entity\User;
 use App\Entity\Etat;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,6 +61,7 @@ class ImportDBController extends AbstractController
 
             $mois = $fichefraisorigin->mois;
             $date = \DateTime::createFromFormat('Ym', $mois)->setDate((int)substr($mois, 0, 4), (int)substr($mois, 4, 2), 1);
+            $date->setTime(0, 0, 0);
             $fichefrais->setMois($date);
 
             $fichefrais->setNbJustificatifs($fichefraisorigin->nbJustificatifs);
@@ -143,23 +145,24 @@ class ImportDBController extends AbstractController
 
         $data = json_decode($jsonData);
 
-        foreach ($data as $lignefraisforfatorigin){
-            $lignefraisforfatorigin->setUser($entity->getRepository(User::class)->findOneBy(['oldid' => $lignefraisforfatorigin->idVisiteur]));
-            $lignefraisforfatorigin->setFicheFrais($entity->getRepository(FicheFrais::class)->findOneBy(['mois' => $lignefraisforfatorigin->mois]));
-            if ($lignefraisforfatorigin->idEtat === "CL") {
-                // Récupérer l'entité Etat avec l'id 1
-                $etat = $entity->getRepository(FraisForfait::class)->find(1);
-            } elseif ($lignefraisforfatorigin->idEtat === "CR") {
-                // Récupérer l'entité Etat avec l'id 2
-                $etat = $entity->getRepository(Etat::class)->find(2);
-            } elseif ($lignefraisforfatorigin->idEtat === "RB") {
-                // Récupérer l'entité Etat avec l'id 3
-                $etat = $entity->getRepository(Etat::class)->find(3);
-            } elseif ($lignefraisforfatorigin->idEtat === "RB") {
-                // Récupérer l'entité Etat avec l'id 4
-                $etat = $entity->getRepository(Etat::class)->find(4);
-            }
+        foreach ($data as $lignefraisforfatorigin) {
+            $ligneFraisForfait = new LigneFraisForfait();
 
+            $date = \DateTime::createFromFormat('Ym', $lignefraisforfatorigin->mois )->setDate((int)substr($lignefraisforfatorigin->mois, 0, 4), (int)substr($lignefraisforfatorigin->mois, 4, 2), 1);
+            $date->setTime(0, 0, 0);
+
+            $user = $entity->getRepository(User::class)->findOneBy(['oldid' => $lignefraisforfatorigin->idVisiteur]);
+            $ficheFrais = $entity->getRepository(FicheFrais::class)->findOneBy(['mois' => $date, 'user' => $user ]);
+
+            $ligneFraisForfait->setFraisForfait($entity->getRepository(FraisForfait::class)->find($lignefraisforfatorigin->idFraisForfait));
+
+            $ligneFraisForfait->setFicheFrais($ficheFrais);
+
+            $ligneFraisForfait->setQuantite($lignefraisforfatorigin->quantite);
+
+            $entity->persist($ligneFraisForfait);
+
+            $entity->flush();
         }
 
 
