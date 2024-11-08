@@ -25,4 +25,8 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    'mois' => [
+        'path' => './assets/mois.js',
+        'entrypoint' => true,
+    ],
 ];
