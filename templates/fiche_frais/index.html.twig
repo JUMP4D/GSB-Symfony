@@ -5,50 +5,30 @@
 {% block body %}
     <div class="container mt-5">
         <h1 class="mb-4">Fiches de Frais</h1>
-        <select id="monthSelect" class="form-select" aria-label="Default select example">
-            <option value="00">Sélectionner un mois</option>
-            <option value="01">Janvier</option>
-            <option value="02">Février</option>
-            <option value="03">Mars</option>
-            <option value="04">Avril</option>
-            <option value="05">Mai</option>
-            <option value="06">Juin</option>
-            <option value="07">Juillet</option>
-            <option value="08">Août</option>
-            <option value="09">Septembre</option>
-            <option value="10">Octobre</option>
-            <option value="11">Novembre</option>
-            <option value="12">Décembre</option>
-        </select>
+        {{ form_start(form) }}
+        {{ form_end(form) }}
         <br>
-        <table class="table table-striped">
-            <thead class="thead-dark">
-            <tr>
-                <th>ID</th>
-                <th>Nb Justificatifs</th>
-                <th>Montant Valid</th>
-                <th>Date Modification</th>
-                <th>Mois</th>
-            </tr>
-            </thead>
-            <tbody id="ficheFraisTable">
-            {% for fiche in ficheFrais %}
-                <tr>
-                    <td>{{ fiche.id }}</td>
-                    <td>{{ fiche.nbJustificatifs }}</td>
-                    <td>{{ fiche.montantValid }}</td>
-                    <td>{{ fiche.dateModif|date('Y-m-d H:i') }}</td>
-                    <td>{{ fiche.mois|date('Y-m') }}</td>
-                </tr>
+        {% if form.vars.submitted and form.vars.valid %}
+            {% if ficheFrais is not empty %}
+                <div class="row">
+                    {% for fiche in ficheFrais %}
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ fiche.id }}</h5>
+                                    <p class="card-text">
+                                        Nb Justificatifs : {{ fiche.nbJustificatifs }}<br>
+                                        Montant Valid : {{ fiche.montantValid }}<br>
+                                        Date Modif : {{ fiche.dateModif|date('d-m-Y') }}<br>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             {% else %}
-                <tr>
-                    <td colspan="5" class="text-center">No records found</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                <p>Aucune fiche de frais trouvée pour ce mois.</p>
+            {% endif %}
+        {% endif %}
     </div>
-    {% block javascripts %}
-        {{ importmap('mois') }}
-    {% endblock %}
 {% endblock %}
