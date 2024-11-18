@@ -21,23 +21,25 @@ class FicheFraisController extends AbstractController
         // recuperer les fiches de frais
         $ficheFraisRepository = $entityManager->getRepository(FicheFrais::class);
 
-        // filtre les fiche frais par utilisateur
-        $ficheFrais = $ficheFraisRepository->findBy(['user' => $user]);
 
         //donner les fichefrais au formulaire
         $form = $this->createForm(FicheFraisType::class, null, [
-            'lesfiches' => $ficheFrais
+            'lesfiches' => $ficheFraisRepository->findBy(['user' => $user])
         ]);
 
         $form->handleRequest($request);
 
+        $ficheFrais = [];
+
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedFicheFrais = $form->get('mois')->getData();
-            $selectedMois = $selectedFicheFrais->getMois();
-            $ficheFrais = $ficheFraisRepository->findBy([
-                'user' => $user,
-                'mois' => $selectedMois
-            ]);
+            if ($selectedFicheFrais) {
+                $selectedMois = $selectedFicheFrais->getMois();
+                $ficheFrais = $ficheFraisRepository->findBy([
+                    'user' => $user,
+                    'mois' => $selectedMois
+                ]);
+            }
         }
 
         return $this->render('fiche_frais/index.html.twig', [

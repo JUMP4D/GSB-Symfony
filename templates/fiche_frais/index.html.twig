@@ -8,27 +8,28 @@
         {{ form_start(form) }}
         {{ form_end(form) }}
         <br>
-        {% if form.vars.submitted and form.vars.valid %}
-            {% if ficheFrais is not empty %}
-                <div class="row">
-                    {% for fiche in ficheFrais %}
-                        <div class="col-md-4">
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ fiche.id }}</h5>
-                                    <p class="card-text">
-                                        Nb Justificatifs : {{ fiche.nbJustificatifs }}<br>
-                                        Montant Valid : {{ fiche.montantValid }}<br>
-                                        Date Modif : {{ fiche.dateModif|date('d-m-Y') }}<br>
-                                    </p>
-                                </div>
+
+        <pre>{{ ficheFrais|dump }}</pre>
+
+        {% if ficheFrais is not empty %}
+            <div class="row">
+                {% for fiche in ficheFrais %}
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">ID : {{ fiche.id|default('N/A') }}</h5>
+                                <p class="card-text">
+                                    Nb Justificatifs : {{ fiche.nbJustificatifs|default('N/A') }}<br>
+                                    Montant Valid : {{ fiche.montantValid|default('0') }}<br>
+                                    Date Modif : {{ fiche.dateModif ? fiche.dateModif|date('d-m-Y') : 'N/A' }}<br>
+                                </p>
                             </div>
                         </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>Aucune fiche de frais trouvée pour ce mois.</p>
-            {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Aucune fiche de frais trouvée pour ce mois.</p>
         {% endif %}
     </div>
 {% endblock %}

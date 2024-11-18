@@ -16,14 +16,19 @@ class FicheFraisType extends AbstractType
         $builder
             ->add('mois', ChoiceType::class, [
                 'choices' => $options['lesfiches'],
-                'choice_label' => function($ficheFrais) {
+                'choice_label' => function (FicheFrais $ficheFrais) {
                     return $ficheFrais->getMois()->format('m-Y');
                 },
+                'choice_value' => function (?FicheFrais $ficheFrais) {
+                    return $ficheFrais ? $ficheFrais->getId() : '';
+                },
+                'placeholder' => 'Sélectionnez un mois',
                 'label' => 'Mois : ',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Filtrer'
             ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
