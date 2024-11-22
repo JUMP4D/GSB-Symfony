@@ -5,31 +5,44 @@
 {% block body %}
     <div class="container mt-5">
         <h1 class="mb-4">Fiches de Frais</h1>
-        {{ form_start(form) }}
-        {{ form_end(form) }}
+        <turbo-frame id="form_frame">
+            {{ form_start(form, {'attr': {'data-turbo-frame': 'the_frame_fiche'}}) }}
+            <div class="form-group">
+                {{ form_label(form.mois) }}
+                {{ form_widget(form.mois, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <br>
+            <div class="form-group">
+                {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+            {{ form_end(form) }}
+        </turbo-frame>
         <br>
-
-        <pre>{{ ficheFrais|dump }}</pre>
-
-        {% if ficheFrais is not empty %}
-            <div class="row">
-                {% for fiche in ficheFrais %}
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">ID : {{ fiche.id|default('N/A') }}</h5>
-                                <p class="card-text">
-                                    Nb Justificatifs : {{ fiche.nbJustificatifs|default('N/A') }}<br>
-                                    Montant Valid : {{ fiche.montantValid|default('0') }}<br>
-                                    Date Modif : {{ fiche.dateModif ? fiche.dateModif|date('d-m-Y') : 'N/A' }}<br>
-                                </p>
+        <turbo-frame id="the_frame_fiche">
+            {% if ficheFrais is not empty %}
+                <div class="row">
+                    {% for fiche in ficheFrais %}
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">ID : {{ fiche.id|default('N/A') }}</h5>
+                                    <p class="card-text">
+                                        Nb Justificatifs : {{ fiche.nbJustificatifs|default('N/A') }}<br>
+                                        Montant Valid : {{ fiche.montantValid|default('0') }}<br>
+                                        Date Modif : {{ fiche.dateModif ? fiche.dateModif|date('d-m-Y') : 'N/A' }}<br>
+                                    </p>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#ficheModal">Ajouter une dépense</a>
+                                    <div class="modal-dialog modal-dialog-centered">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>Aucune fiche de frais trouvée pour ce mois.</p>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Aucune fiche de frais trouvée pour ce mois.</p>
+            {% endif %}
+        </turbo-frame>
+
     </div>
 {% endblock %}
