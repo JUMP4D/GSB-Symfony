@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\FicheFrais;
 use App\Entity\LigneFraisForfait;
 use App\Entity\FraisForfait;
+use App\Form\FicheFraisHorsType;
 use App\Form\FicheFraisType;
 use App\Form\FicheType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,60 +62,115 @@ class FicheFraisController extends AbstractController
     #[Route('/saisirfiche', name: 'app_saisir_fiche')]
     public function saisirFiche(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Créer le formulaire pour saisir les fiches de frais
-        $form = $this->createForm(FicheType::class);
+        // Créer le formulaire pour saisir les lignes frais Forfait
+        $formF = $this->createForm(FicheType::class);
+
+        // Créer le formulaire pour saisir les lignes frais hors Forfait
+        $formFH = $this->createForm(FicheFraisHorsType::class);
 
         // Gérer la soumission du formulaire
-        $form->handleRequest($request);
+        $formF->handleRequest($request);
+        $formFH->handleRequest($request);
 
-        // Vérifier si le formulaire est soumis et valide
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer les données du formulaire
-            $data = $form->getData();
+        $user = $this->getUser();
 
-            // Récupérer l'utilisateur connecté
-            $user = $this->getUser();
+        $existingFicheFrais = $entityManager->getRepository(FicheFrais::class)->findOneBy([
+            'user' => $user,
+            'mois' => new \DateTime(date('Y-m-01 00:00:00'))
+        ]);
 
-            // Créer une nouvelle fiche de frais
-            $ficheFrais = new FicheFrais();
-            $ficheFrais->setUser($user);
-            $ficheFrais->setDateModif(new \DateTime());
-            $ficheFrais->setNbJustificatifs(0);
-            $ficheFrais->setMontantValid(0.00);
-            $ficheFrais->setMois(new \DateTime(date('Y-m-01 00:00:00'))); // Set the current month as DateTime
+        $datefiche =  $existingFicheFrais->getMois()->format('m-Y');
 
-            // Persister la fiche de frais dans la base de données
-            $entityManager->persist($ficheFrais);
-            $entityManager->flush();
+        // crée une ligne fiche frais
+        if ($existingFicheFrais) {
 
-            // Définir les catégories de frais forfaitaires
-            $categories = [
-                'Forfait Etape' => $data['forfaitEtape'],
-                'Frais Kilométrique' => $data['fraisKilometrique'],
-                'Nuitée Hôtel' => $data['nuiteeHotel'],
-                'Repas Restaurant' => $data['repasRestaurant'],
-            ];
+            if($formF->isSubmitted() && $formF->isValid()) {
+                $data = $formF->getData();
 
-            // Créer et persister les lignes de frais forfaitaires
-            foreach ($categories as $libelle => $quantite) {
-                $fraisForfait = $entityManager->getRepository(FraisForfait::class)->findOneBy(['libelle' => $libelle]);
-                $ligneFraisForfait = new LigneFraisForfait();
-                $ligneFraisForfait->setFicheFrais($ficheFrais);
-                $ligneFraisForfait->setFraisForfait($fraisForfait);
-                $ligneFraisForfait->setQuantite($quantite);
-                $entityManager->persist($ligneFraisForfait);
+                $categories = [
+                    'Forfait Etape' => $data['forfaitEtape'],
+                    'Frais Kilométrique' => $data['fraisKilometrique'],
+                    'Nuitée Hôtel' => $data['nuiteeHotel'],
+                    'Repas Restaurant' => $data['repasRestaurant'],
+                ];
+
+                // Mettre à jour les lignes de frais forfaitaires existantes
+                foreach ($categories as $libelle => $quantite) {
+                    $fraisForfait = $entityManager->getRepository(FraisForfait::class)->findOneBy(['libelle' => $libelle]);
+                    $ligneFraisForfait = $entityManager->getRepository(LigneFraisForfait::class)->findOneBy([
+                        'ficheFrais' => $existingFicheFrais,
+                        'fraisForfait' => $fraisForfait
+                    ]);
+
+                    if ($ligneFraisForfait) {
+                        $ligneFraisForfait->setQuantite($quantite);
+                        $entityManager->persist($ligneFraisForfait);
+                    }
+                }
+                $entityManager->flush();
+            }else{
+                $formF->setData([
+                    'forfaitEtape' => $existingFicheFrais->getLigneFraisForfaits()->get(0)->getQuantite(),
+                    'fraisKilometrique' => $existingFicheFrais->getLigneFraisForfaits()->get(1)->getQuantite(),
+                    'nuiteeHotel' => $existingFicheFrais->getLigneFraisForfaits()->get(2)->getQuantite(),
+                    'repasRestaurant' => $existingFicheFrais->getLigneFraisForfaits()->get(3)->getQuantite(),
+                ]);
             }
+        } else {
+            // Vérifier si le formulaire est soumis et valide
+            if ($formF->isSubmitted() && $formF->isValid()) {
+                // Récupérer les données du formulaire
+                $data = $formF->getData();
 
-            // Sauvegarder les lignes de frais forfaitaires dans la base de données
-            $entityManager->flush();
+                // Récupérer l'utilisateur connecté
+                $user = $this->getUser();
 
-            // Rediriger vers la route 'app_fiche_frais'
-            return $this->redirectToRoute('app_fiche_frais');
+                // Créer une nouvelle fiche de frais
+                $ficheFrais = new FicheFrais();
+                $ficheFrais->setEtat($entityManager->getRepository(Etat::class)->find(2));
+                $ficheFrais->setUser($user);
+                $ficheFrais->setDateModif(new \DateTime());
+                $ficheFrais->setNbJustificatifs(0);
+                $ficheFrais->setMontantValid(0.00);
+                $ficheFrais->setMois(new \DateTime(date('Y-m-01 00:00:00'))); // Set the current month as DateTime
+
+                // Persister la fiche de frais dans la base de données
+                $entityManager->persist($ficheFrais);
+                $entityManager->flush();
+
+                // Définir les catégories de frais forfaitaires
+                $categories = [
+                    'Forfait Etape' => $data['forfaitEtape'],
+                    'Frais Kilométrique' => $data['fraisKilometrique'],
+                    'Nuitée Hôtel' => $data['nuiteeHotel'],
+                    'Repas Restaurant' => $data['repasRestaurant'],
+                ];
+
+                // Créer et persister les lignes de frais forfaitaires
+                foreach ($categories as $libelle => $quantite) {
+                    $fraisForfait = $entityManager->getRepository(FraisForfait::class)->findOneBy(['libelle' => $libelle]);
+                    $ligneFraisForfait = new LigneFraisForfait();
+                    $ligneFraisForfait->setFicheFrais($ficheFrais);
+                    $ligneFraisForfait->setFraisForfait($fraisForfait);
+                    $ligneFraisForfait->setQuantite($quantite);
+                    $entityManager->persist($ligneFraisForfait);
+                }
+
+                // Sauvegarder les lignes de frais forfaitaires dans la base de données
+                $entityManager->flush();
+
+                // Rediriger vers la route 'app_fiche_frais'
+                return $this->redirectToRoute('app_fiche_frais');
+            }
         }
+
+        // crée une ligne fiche frais hors forfait
 
         // Rendre le formulaire de saisie des fiches de frais
         return $this->render('fiche_frais/saisir.html.twig', [
-            'form' => $form->createView(),
+            'datefiche' => $datefiche,
+            'formF' => $formF->createView(),
+            'formFH' => $formFH->createView()
         ]);
     }
 }

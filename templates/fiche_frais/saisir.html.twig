@@ -5,25 +5,46 @@
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="mb-4">Saisir Fiche de Frais</h1>
-        {{ form_start(form) }}
+        <h1 class="mb-4">Renseigner ma fiche de frais du mois {{ datefiche }}</h1>
+        <h2>Eléments forfaitisés</h2>
+        {{ form_start(formF) }}
         <div class="form-group">
-            {{ form_label(form.forfaitEtape) }}
-            {{ form_widget(form.forfaitEtape, {'attr': {'class': 'form-control'}}) }}
+            {{ form_label(formF.forfaitEtape) }}
+            {{ form_widget(formF.forfaitEtape, {'attr': {'class': 'form-control'}}) }}
         </div>
         <div class="form-group">
-            {{ form_label(form.fraisKilometrique) }}
-            {{ form_widget(form.fraisKilometrique, {'attr': {'class': 'form-control'}}) }}
+            {{ form_label(formF.fraisKilometrique) }}
+            {{ form_widget(formF.fraisKilometrique, {'attr': {'class': 'form-control'}}) }}
         </div>
         <div class="form-group">
-            {{ form_label(form.nuiteeHotel) }}
-            {{ form_widget(form.nuiteeHotel, {'attr': {'class': 'form-control'}}) }}
+            {{ form_label(formF.nuiteeHotel) }}
+            {{ form_widget(formF.nuiteeHotel, {'attr': {'class': 'form-control'}}) }}
         </div>
         <div class="form-group">
-            {{ form_label(form.repasRestaurant) }}
-            {{ form_widget(form.repasRestaurant, {'attr': {'class': 'form-control'}}) }}
+            {{ form_label(formF.repasRestaurant) }}
+            {{ form_widget(formF.repasRestaurant, {'attr': {'class': 'form-control'}}) }}
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        {{ form_end(form) }}
+        <br>
+        <button type="submit" class="btn btn-primary">Valider</button>
+        {{ form_end(formF) }}
+        <br>
+        <h2>Elément hors forfait</h2>
+        {{ form_start(formFH) }}
+        <div class="form-group">
+            {{ form_label(formFH.Date) }}
+            {{ form_widget(formFH.Date, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(formFH.libelle) }}
+            {{ form_widget(formFH.libelle, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div>
+            {{ form_label(formFH.montant) }}
+            {{ form_widget(formFH.montant, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Valider</button>
+        {{ form_end(formFH) }}
+
     </div>
 {% endblock %}
