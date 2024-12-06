@@ -79,7 +79,7 @@ class FicheFraisController extends AbstractController
             'mois' => new \DateTime(date('Y-m-01 00:00:00'))
         ]);
 
-        $datefiche =  $existingFicheFrais->getMois()->format('m-Y');
+        $datefiche = \DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-01 00:00:00'))->format('Y-m');
 
         // crée une ligne fiche frais
         if ($existingFicheFrais) {
