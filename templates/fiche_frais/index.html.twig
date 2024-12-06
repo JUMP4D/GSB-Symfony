@@ -19,27 +19,38 @@
         </turbo-frame>
         <br>
         <turbo-frame id="the_frame_fiche">
-            {% if ficheFrais is not empty %}
-                <div class="row">
-                    {% for fiche in ficheFrais %}
-                        <div class="col-md-4">
-                            <div class="card mb-4">
-                                <div class="card-body">
-                                    <h5 class="card-title">ID : {{ fiche.id|default('N/A') }}</h5>
-                                    <p class="card-text">
-                                        Nb Justificatifs : {{ fiche.nbJustificatifs|default('N/A') }}<br>
-                                        Montant Valid : {{ fiche.montantValid|default('0') }}<br>
-                                        Date Modif : {{ fiche.dateModif ? fiche.dateModif|date('d-m-Y') : 'N/A' }}<br>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
+            {% if ligneFraisForfaits is not empty %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Forfait Etape</th>
+                        <th>Frais Kilométrique</th>
+                        <th>Nuitée Hôtel</th>
+                        <th>Repas Restaurant</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% set etape = 0 %}
+                        {% set km = 0 %}
+                        {% set nuitee = 0 %}
+                        {% set repas = 0 %}
+                        {% for ligne in ligneFraisForfaits %}
+                            {% set etape = etape + (ligne.fraisForfait.libelle == 'Forfait Etape' ? ligne.quantite : 0) %}
+                            {% set km = km + (ligne.fraisForfait.libelle == 'Frais Kilométrique' ? ligne.quantite : 0) %}
+                            {% set nuitee = nuitee + (ligne.fraisForfait.libelle == 'Nuitée Hôtel' ? ligne.quantite : 0) %}
+                            {% set repas = repas + (ligne.fraisForfait.libelle == 'Repas Restaurant' ? ligne.quantite : 0) %}
+                        {% endfor %}
+                        <td>{{ etape }}</td>
+                        <td>{{ km }}</td>
+                        <td>{{ nuitee }}</td>
+                        <td>{{ repas }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             {% else %}
                 <p>Aucune fiche de frais trouvée pour ce mois.</p>
             {% endif %}
         </turbo-frame>
-
     </div>
 {% endblock %}

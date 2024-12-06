@@ -153,8 +153,17 @@ class ImportDBController extends AbstractController
 
             $user = $entity->getRepository(User::class)->findOneBy(['oldid' => $lignefraisforfatorigin->idVisiteur]);
             $ficheFrais = $entity->getRepository(FicheFrais::class)->findOneBy(['mois' => $date, 'user' => $user ]);
+            if($lignefraisforfatorigin->idFraisForfait === "ETP") {
+                $fraisForfait = $entity->getRepository(FraisForfait::class)->find(1);
+            } elseif ($lignefraisforfatorigin->idFraisForfait === "KM") {
+                $fraisForfait = $entity->getRepository(FraisForfait::class)->find(2);
+            } elseif ($lignefraisforfatorigin->idFraisForfait === "NUI") {
+                $fraisForfait = $entity->getRepository(FraisForfait::class)->find(3);
+            } elseif ($lignefraisforfatorigin->idFraisForfait === "REP") {
+                $fraisForfait = $entity->getRepository(FraisForfait::class)->find(4);
+            }
 
-            $ligneFraisForfait->setFraisForfait($entity->getRepository(FraisForfait::class)->find($lignefraisforfatorigin->idFraisForfait));
+            $ligneFraisForfait->setFraisForfait($fraisForfait);
 
             $ligneFraisForfait->setFicheFrais($ficheFrais);
 

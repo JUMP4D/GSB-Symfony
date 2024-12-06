@@ -1,0 +1,29 @@
+{# templates/fiche_frais/saisir.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Saisir Fiche de Frais{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Saisir Fiche de Frais</h1>
+        {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.forfaitEtape) }}
+            {{ form_widget(form.forfaitEtape, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.fraisKilometrique) }}
+            {{ form_widget(form.fraisKilometrique, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.nuiteeHotel) }}
+            {{ form_widget(form.nuiteeHotel, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.repasRestaurant) }}
+            {{ form_widget(form.repasRestaurant, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
