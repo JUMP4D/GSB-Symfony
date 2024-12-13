@@ -28,7 +28,6 @@ class FicheFraisType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'Filtrer'
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

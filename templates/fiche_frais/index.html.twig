@@ -20,6 +20,7 @@
         <br>
         <turbo-frame id="the_frame_fiche">
             {% if ligneFraisForfaits is not empty %}
+                <h2>Eléments forfaitisés</h2>
                 <table class="table">
                     <thead>
                     <tr>
@@ -48,8 +49,25 @@
                     </tr>
                     </tbody>
                 </table>
-            {% else %}
-                <p>Aucune fiche de frais trouvée pour ce mois.</p>
+                <h2>Eléments hors forfait</h2>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Libellé</th>
+                        <th>Montant</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for ligne in ligneFraisHorsForfaits %}
+                    <tr>
+                            <td>{{ ligne.date | date('d/m/Y') }}</td>
+                            <td>{{ ligne.libelle }}</td>
+                            <td>{{ ligne.montant }}€</td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
             {% endif %}
         </turbo-frame>
     </div>

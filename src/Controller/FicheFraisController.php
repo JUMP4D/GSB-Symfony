@@ -6,6 +6,7 @@ use App\Entity\Etat;
 use App\Entity\FicheFrais;
 use App\Entity\LigneFraisForfait;
 use App\Entity\FraisForfait;
+use App\Entity\LigneFraisHorsForfait;
 use App\Form\FicheFraisHorsType;
 use App\Form\FicheFraisType;
 use App\Form\FicheType;
@@ -27,6 +28,9 @@ class FicheFraisController extends AbstractController
         $ficheFraisRepository = $entityManager->getRepository(FicheFrais::class);
         $ligneFraisForfaitRepository = $entityManager->getRepository(LigneFraisForfait::class);
 
+        // recuperer les fiche hors forfait
+        $ficheHorsForfaitRepository = $entityManager->getRepository(LigneFraisHorsForfait::class);
+
         //donner les fichefrais au formulaire
         $form = $this->createForm(FicheFraisType::class, null, [
             'lesfiches' => $ficheFraisRepository->findBy(['user' => $user])
@@ -36,6 +40,7 @@ class FicheFraisController extends AbstractController
 
         $ficheFrais = [];
         $ligneFraisForfaits = [];
+        $ligneFraisHorsForfaits = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
             $selectedFicheFrais = $form->get('mois')->getData();
@@ -48,6 +53,7 @@ class FicheFraisController extends AbstractController
 
                 foreach ($ficheFrais as $fiche) {
                     $ligneFraisForfaits = array_merge($ligneFraisForfaits, $ligneFraisForfaitRepository->findBy(['ficheFrais' => $fiche]));
+                    $ligneFraisHorsForfaits = array_merge($ligneFraisHorsForfaits, $ficheHorsForfaitRepository->findBy(['ficheFrais' => $fiche]));
                 }
             }
         }
@@ -55,6 +61,7 @@ class FicheFraisController extends AbstractController
         return $this->render('fiche_frais/index.html.twig', [
             'ficheFrais' => $ficheFrais,
             'ligneFraisForfaits' => $ligneFraisForfaits,
+            'ligneFraisHorsForfaits' => $ligneFraisHorsForfaits,
             'form' => $form->createView()
         ]);
     }
@@ -79,7 +86,11 @@ class FicheFraisController extends AbstractController
             'mois' => new \DateTime(date('Y-m-01 00:00:00'))
         ]);
 
-        $datefiche = \DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-01 00:00:00'))->format('Y-m');
+        $datefiche = \DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-01 00:00:00'))->format('m-Y');
+
+        if($request->get('action') == 'reset'){
+            return $this->redirectToRoute('app_saisir_fiche');
+        }
 
         // crée une ligne fiche frais
         if ($existingFicheFrais) {
@@ -164,7 +175,18 @@ class FicheFraisController extends AbstractController
             }
         }
 
-        // crée une ligne fiche frais hors forfait
+        if ($formFH->isSubmitted() && $formFH->isValid()) {
+            $data = $formFH->getData();
+
+            $ligneFraisHorsForfait = new LigneFraisHorsForfait();
+            $ligneFraisHorsForfait->setFicheFrais($existingFicheFrais);
+            $ligneFraisHorsForfait->setLibelle($data['libelle']);
+            $ligneFraisHorsForfait->setDate($data['Date']);
+            $ligneFraisHorsForfait->setMontant($data['montant']);
+            $entityManager->persist($ligneFraisHorsForfait);
+            $entityManager->flush();
+        }
+
 
         // Rendre le formulaire de saisie des fiches de frais
         return $this->render('fiche_frais/saisir.html.twig', [
