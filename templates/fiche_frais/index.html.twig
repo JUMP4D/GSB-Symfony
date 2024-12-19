@@ -20,35 +20,28 @@
         <br>
         <turbo-frame id="the_frame_fiche">
             {% if ligneFraisForfaits is not empty %}
-                <h2>Eléments forfaitisés</h2>
+                <h2>Éléments forfaitisés</h2>
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Forfait Etape</th>
-                        <th>Frais Kilométrique</th>
-                        <th>Nuitée Hôtel</th>
-                        <th>Repas Restaurant</th>
+                        <th>Type de frais</th>
+                        <th>Quantité</th>
+                        <th>Montant total (€)</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        {% set etape = 0 %}
-                        {% set km = 0 %}
-                        {% set nuitee = 0 %}
-                        {% set repas = 0 %}
-                        {% for ligne in ligneFraisForfaits %}
-                            {% set etape = etape + (ligne.fraisForfait.libelle == 'Forfait Etape' ? ligne.quantite : 0) %}
-                            {% set km = km + (ligne.fraisForfait.libelle == 'Frais Kilométrique' ? ligne.quantite : 0) %}
-                            {% set nuitee = nuitee + (ligne.fraisForfait.libelle == 'Nuitée Hôtel' ? ligne.quantite : 0) %}
-                            {% set repas = repas + (ligne.fraisForfait.libelle == 'Repas Restaurant' ? ligne.quantite : 0) %}
-                        {% endfor %}
-                        <td>{{ etape }}</td>
-                        <td>{{ km }}</td>
-                        <td>{{ nuitee }}</td>
-                        <td>{{ repas }}</td>
-                    </tr>
+                    {% for ligne in ligneFraisForfaits %}
+                        <tr>
+                            <td>{{ ligne.fraisForfait.libelle }}</td>
+                            <td>{{ ligne.quantite }}</td>
+                            <td>{{ (ligne.quantite * ligne.fraisForfait.montant) | number_format(2, ',', ' ') }}</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
+
+
+
                 <h2>Eléments hors forfait</h2>
                 <table class="table">
                     <thead>

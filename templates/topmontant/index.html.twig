@@ -1,0 +1,57 @@
+{# templates/fiche_frais/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Fiches de Frais{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Fiches de Frais</h1>
+
+        {# Formulaire pour choisir un mois - méthode GET #}
+        <form method="get" action="{{ path('app_fiche_frais') }}">
+            <div class="form-group">
+                <label for="mois">Sélectionner un mois</label>
+                <select name="mois" id="mois" class="form-control">
+                    <option value="2024-01" {% if selectedMonth == '2024-01' %}selected{% endif %}>Janvier</option>
+                    <option value="2024-02" {% if selectedMonth == '2024-02' %}selected{% endif %}>Février</option>
+                    <option value="2024-03" {% if selectedMonth == '2024-03' %}selected{% endif %}>Mars</option>
+                    <option value="2024-04" {% if selectedMonth == '2024-04' %}selected{% endif %}>Avril</option>
+                    <option value="2024-05" {% if selectedMonth == '2024-05' %}selected{% endif %}>Mai</option>
+                    <option value="2024-06" {% if selectedMonth == '2024-06' %}selected{% endif %}>Juin</option>
+                    <option value="2024-07" {% if selectedMonth == '2024-07' %}selected{% endif %}>Juillet</option>
+                    <option value="2024-08" {% if selectedMonth == '2024-08' %}selected{% endif %}>Août</option>
+                    <option value="2024-09" {% if selectedMonth == '2024-09' %}selected{% endif %}>Septembre</option>
+                    <option value="2024-10" {% if selectedMonth == '2024-10' %}selected{% endif %}>Octobre</option>
+                    <option value="2024-11" {% if selectedMonth == '2024-11' %}selected{% endif %}>Novembre</option>
+                    <option value="2024-12" {% if selectedMonth == '2024-12' %}selected{% endif %}>Décembre</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Afficher</button>
+        </form>
+
+        {% if ficheFrais is not empty %}
+            <h2>Utilisateurs ayant des fiches de frais validées pour le mois {{ selectedMonth }}</h2>
+            <table class="table mt-4">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Fiche de frais validée</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for fiche in ficheFrais %}
+                    <tr>
+                        <td>{{ fiche.user.nom }}</td>
+                        <td>{{ fiche.user.prenom }}</td>
+                        <td>{{ fiche.montantValid }}€</td> {# Affiche le montant validé #}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucun utilisateur n'a soumis de fiches de frais validées pour le mois sélectionné.</p>
+        {% endif %}
+    </div>
+{% endblock %}
