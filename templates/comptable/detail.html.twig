@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}comptable{% endblock %}
+
+{% block body %}
+    <nav class="bg-gray-800 p-4 rounded-b-lg">
+        <div class="container mx-auto flex justify-between items-center ">
+            <div class="text-white text-3xl font-bold">GSB</div>
+            <div class="space-x-4">
+                {% if is_granted('ROLE_COMPTABLE') %}
+                    <a href="{{ path('app_comptable') }}" class="text-gray-300 hover:text-white">Comptable</a>
+                {% endif %}
+                <a href="{{ path('app_fiche_frais') }}" class="text-gray-300 hover:text-white">Mes fiches de frais</a>
+                <a href="{{ path('app_saisir_fiche') }}" class="text-gray-300 hover:text-white">Saisie fiche de frais</a>
+                <a href="{{ path('app_account') }}" class="text-gray-300 hover:text-white">Mon compte</a>
+                {% if app.user %}
+                {% else %}
+                {% endif %}
+                <a href="{{ path('app_logout') }}" class="text-gray-300 hover:text-white">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto mt-5 p-4 bg-white shadow-md rounded-lg">
+        <h1 class="text-2xl font-bold mb-4">Détails de la fiche de frais du {{ ficheFrais.mois|date('m-Y') }}</h1>
+        <p class="text-gray-600">État : {{ ficheFrais.etat.libelle }}</p>
+
+        <!-- Lignes de frais forfait -->
+        <h2 class="text-xl font-bold mt-6">Lignes de frais forfait</h2>
+        <table class="table-auto w-full mt-4">
+            <thead>
+            <tr>
+                <th class="px-4 py-2">Libellé</th>
+                <th class="px-4 py-2">Quantité</th>
+                <th class="px-4 py-2">Montant</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ligne in lignesFraisForfait %}
+                <tr>
+                    <td class="border px-4 py-2">{{ ligne.fraisForfait.libelle }}</td>
+                    <td class="border px-4 py-2">{{ ligne.quantite }}</td>
+                    <td class="border px-4 py-2">{{ ligne.fraisForfait.montant }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Lignes de frais hors forfait -->
+        <h2 class="text-xl font-bold mt-6">Lignes de frais hors forfait</h2>
+        <table class="table-auto w-full mt-4">
+            <thead>
+            <tr>
+                <th class="px-4 py-2">Libellé</th>
+                <th class="px-4 py-2">Date</th>
+                <th class="px-4 py-2">Montant</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if lignesFraisHorsForfait is not empty %}
+                {% for ligne in lignesFraisHorsForfait %}
+                    <tr>
+                        <td class="border px-4 py-2">{{ ligne.libelle }}</td>
+                        <td class="border px-4 py-2">{{ ligne.date|date('d-m-Y') }}</td>
+                        <td class="border px-4 py-2">{{ ligne.montant }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td class="border px-4 py-2 text-center" colspan="3">Aucune ligne de frais hors forfait disponible.</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        <div class="mt-6">
+            <form action="{{ path('app_comptable_valider_fiche', { id: ficheFrais.id }) }}" method="post">
+                <button type="submit" class="btn btn-primary bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Valider
+                </button>
+            </form>
+        </div>
+        <a href="{{ path('app_comptable') }}" class="text-blue-500 hover:underline mt-4 block">Retour</a>
+    </div>
+{% endblock %}

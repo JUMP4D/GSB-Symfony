@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}comptable{% endblock %}
+
+{% block body %}
+    <nav class="bg-gray-800 p-4 rounded-b-lg">
+        <div class="container mx-auto flex justify-between items-center ">
+            <div class="text-white text-3xl font-bold">GSB</div>
+            <div class="space-x-4">
+                {% if is_granted('ROLE_COMPTABLE') %}
+                    <a href="{{ path('app_comptable') }}" class="text-gray-300 hover:text-white">Comptable</a>
+                {% endif %}
+                <a href="{{ path('app_fiche_frais') }}" class="text-gray-300 hover:text-white">Mes fiches de frais</a>
+                <a href="{{ path('app_saisir_fiche') }}" class="text-gray-300 hover:text-white">Saisie fiche de frais</a>
+                <a href="{{ path('app_account') }}" class="text-gray-300 hover:text-white">Mon compte</a>
+                {% if app.user %}
+                {% else %}
+                {% endif %}
+                <a href="{{ path('app_logout') }}" class="text-gray-300 hover:text-white">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto mt-5 p-4 bg-white shadow-md rounded-lg">
+        <h1 class="text-2xl font-bold mb-4">Comptable</h1>
+        <turbo-frame id="form_frame">
+            {{ form_start(form, {'attr': {'data-turbo-frame': 'the_frame_fiche', 'class': 'space-y-4'}}) }}
+            <div class="form-group">
+                {{ form_label(form.visiteur, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+                {{ form_widget(form.visiteur, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'}}) }}
+            </div>
+            {{ form_end(form) }}
+        </turbo-frame>
+        <br>
+        <turbo-frame id="the_frame_fiche">
+            {% if fichesFrais is not empty %}
+                <div class="grid grid-cols-1 gap-4">
+                    {% for fiche in fichesFrais %}
+                        <a href="{{ path('app_comptable_fiche', { id: fiche.id }) }}" class="block">
+                            <div class="bg-gray-100 p-4 rounded-lg shadow-md hover:bg-gray-200">
+                                <p class="text-gray-600 font-medium">{{ fiche.mois|date('m-Y') }} - État ID : {{ fiche.etat.libelle }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-gray-500">Aucune fiche de frais trouvée.</p>
+            {% endif %}
+        </turbo-frame>
+    </div>
+{% endblock %}

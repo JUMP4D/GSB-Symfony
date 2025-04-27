@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block body %}
+    <nav class="bg-gray-800 p-4 rounded-b-lg">
+        <div class="container mx-auto flex justify-between items-center ">
+            <div class="text-white text-3xl font-bold">GSB</div>
+            <div class="space-x-4">
+                {% if is_granted('ROLE_COMPTABLE') %}
+                    <a href="{{ path('app_comptable') }}" class="text-gray-300 hover:text-white">Comptable</a>
+                {% endif %}
+                <a href="{{ path('app_fiche_frais') }}" class="text-gray-300 hover:text-white">Mes fiches de frais</a>
+                <a href="{{ path('app_saisir_fiche') }}" class="text-gray-300 hover:text-white">Saisie fiche de frais</a>
+                <a href="{{ path('app_account') }}" class="text-gray-300 hover:text-white">Mon compte</a>
+                {% if app.user %}
+                {% else %}
+                {% endif %}
+                <a href="{{ path('app_logout') }}" class="text-gray-300 hover:text-white">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+    {% for message in app.flashes('success') %}
+        <div class="bg-green-100 border border-green-400 text-green-700 rounded-lg p-2 m-2" role="alert">
+            <strong class="font-bold">Succes!</strong>
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="bg-red-100 border border-red-400 text-red-700 rounded-lg p-2 p-2 m-2" role="alert">
+            <strong class="font-bold">Erreur!</strong>
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+    {% endfor %}
+
+    <div class="container mx-auto mt-5 p-6 bg-white shadow-lg rounded-lg">
+        <h1 class="text-2xl font-bold mb-4">Mes informations</h1>
+        <div class="mb-4 flex space-x-2">
+            <label class="block text-gray-700 font-bold">Email:</label>
+            <p class="text-gray-900">{{ email }}</p>
+        </div>
+        <div class="mb-4 flex space-x-2">
+            <label class="block text-gray-700 font-bold">Nom:</label>
+            <p class="text-gray-900">{{ nom }}</p>
+        </div>
+        <div class="mb-4 flex space-x-2">
+            <label class="block text-gray-700 font-bold">Prénom:</label>
+            <p class="text-gray-900">{{ prenom }}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold">Rôles:</label>
+            <ul class="list-disc list-inside text-gray-900">
+                {% for role in roles %}
+                    <li>{{ role }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="mt-6">
+            <h2 class="text-xl font-bold mb-4">Changer de mot de passe</h2>
+            {{ form_start(form) }}
+            <div class="mb-4">
+                {{ form_label(form.currentPassword, null, {'label_attr': {'class': 'block text-gray-700 font-bold'}}) }}
+                {{ form_widget(form.currentPassword, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
+            </div>
+            <div class="mb-4">
+                {{ form_label(form.newPassword, null, {'label_attr': {'class': 'block text-gray-700 font-bold'}}) }}
+                {{ form_widget(form.newPassword, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
+            </div>
+            <button type="submit" class="btn btn-primary bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Changer le mot de passe</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

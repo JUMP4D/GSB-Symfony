@@ -1,51 +1,66 @@
-{# templates/fiche_frais/saisir.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Saisir Fiche de Frais{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Renseigner ma fiche de frais du mois {{ datefiche }}</h1>
-        <h2>Eléments forfaitisés</h2>
+    <nav class="bg-gray-800 p-4 rounded-b-lg">
+        <div class="container mx-auto flex justify-between items-center ">
+            <div class="text-white text-3xl font-bold">GSB</div>
+            <div class="space-x-4">
+                {% if is_granted('ROLE_COMPTABLE') %}
+                    <a href="{{ path('app_comptable') }}" class="text-gray-300 hover:text-white">Comptable</a>
+                {% endif %}
+                <a href="{{ path('app_fiche_frais') }}" class="text-gray-300 hover:text-white">Mes fiches de frais</a>
+                <a href="{{ path('app_saisir_fiche') }}" class="text-gray-300 hover:text-white">Saisie fiche de frais</a>
+                <a href="{{ path('app_account') }}" class="text-gray-300 hover:text-white">Mon compte</a>
+                {% if app.user %}
+                {% else %}
+                {% endif %}
+                <a href="{{ path('app_logout') }}" class="text-gray-300 hover:text-white">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5 mb-5 p-6 bg-white shadow-lg rounded-lg">
+        <h1 class="text-2xl font-bold mb-4">Renseigner ma fiche de frais du mois {{ datefiche }}</h1>
+        <h2 class="text-xl font-semibold mb-2">Eléments forfaitisés</h2>
         {{ form_start(formF) }}
-        <div class="form-group">
-            {{ form_label(formF.forfaitEtape) }}
-            {{ form_widget(formF.forfaitEtape, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group mb-4">
+            {{ form_label(formF.forfaitEtape, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+            {{ form_widget(formF.forfaitEtape, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
         </div>
-        <div class="form-group">
-            {{ form_label(formF.fraisKilometrique) }}
-            {{ form_widget(formF.fraisKilometrique, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group mb-4">
+            {{ form_label(formF.fraisKilometrique, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+            {{ form_widget(formF.fraisKilometrique, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
         </div>
-        <div class="form-group">
-            {{ form_label(formF.nuiteeHotel) }}
-            {{ form_widget(formF.nuiteeHotel, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group mb-4">
+            {{ form_label(formF.nuiteeHotel, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+            {{ form_widget(formF.nuiteeHotel, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
         </div>
-        <div class="form-group">
-            {{ form_label(formF.repasRestaurant) }}
-            {{ form_widget(formF.repasRestaurant, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group mb-4">
+            {{ form_label(formF.repasRestaurant, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+            {{ form_widget(formF.repasRestaurant, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
         </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Valider</button>
-        <button type="submit" name="action" value="reset" class="btn btn-secondary">Effacer</button>
+        <div class="flex space-x-4">
+            <button type="submit" class="btn btn-primary bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Valider</button>
+            <button type="submit" name="action" value="reset" class="btn btn-secondary bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">Effacer</button>
+        </div>
         {{ form_end(formF) }}
         <br>
-        <h2>Elément hors forfait</h2>
+        <h2 class="text-xl font-semibold mb-2">Elément hors forfait</h2>
         {{ form_start(formFH) }}
-        <div class="form-group">
-            {{ form_label(formFH.Date) }}
-            {{ form_widget(formFH.Date, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group mb-4">
+            {{ form_label(formFH.Date, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+            {{ form_widget(formFH.Date, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
         </div>
-        <div class="form-group">
-            {{ form_label(formFH.libelle) }}
-            {{ form_widget(formFH.libelle, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group mb-4">
+            {{ form_label(formFH.libelle, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+            {{ form_widget(formFH.libelle, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
         </div>
-        <div>
-            {{ form_label(formFH.montant) }}
-            {{ form_widget(formFH.montant, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group mb-4">
+            {{ form_label(formFH.montant, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+            {{ form_widget(formFH.montant, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
         </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Valider</button>
+        <button type="submit" class="btn btn-primary bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Valider</button>
         {{ form_end(formFH) }}
-
     </div>
 {% endblock %}

@@ -7,6 +7,7 @@ use App\Entity\FicheFrais;
 use App\Entity\LigneFraisForfait;
 use App\Entity\FraisForfait;
 use App\Entity\LigneFraisHorsForfait;
+use App\Entity\User;
 use App\Form\FicheFraisHorsType;
 use App\Form\FicheFraisType;
 use App\Form\FicheType;
@@ -27,6 +28,7 @@ class FicheFraisController extends AbstractController
         // recuperer les fiches de frais
         $ficheFraisRepository = $entityManager->getRepository(FicheFrais::class);
         $ligneFraisForfaitRepository = $entityManager->getRepository(LigneFraisForfait::class);
+
 
         // recuperer les fiche hors forfait
         $ficheHorsForfaitRepository = $entityManager->getRepository(LigneFraisHorsForfait::class);
@@ -151,4 +153,19 @@ class FicheFraisController extends AbstractController
             'formFH' => $formFH->createView()
         ]);
     }
+
+    #[Route('/init', name: 'app_init')]
+    public function init(EntityManagerInterface $entityManager): Response
+    {
+        $User = $entityManager->getRepository(User::class)->find(2);
+
+        $User->setRoles(['ROLE_COMPTABLE']);
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_fiche_frais');
+
+    }
+        
+
 }

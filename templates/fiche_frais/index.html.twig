@@ -3,31 +3,47 @@
 {% block title %}Fiches de Frais{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Fiches de Frais</h1>
-        <turbo-frame id="form_frame">
-            {{ form_start(form, {'attr': {'data-turbo-frame': 'the_frame_fiche'}}) }}
-            <div class="form-group">
-                {{ form_label(form.mois) }}
-                {{ form_widget(form.mois, {'attr': {'class': 'form-control'}}) }}
+    <nav class="bg-gray-800 p-4 rounded-b-lg">
+        <div class="container mx-auto flex justify-between items-center ">
+            <div class="text-white text-3xl font-bold">GSB</div>
+            <div class="space-x-4">
+                {% if is_granted('ROLE_COMPTABLE') %}
+                    <a href="{{ path('app_comptable') }}" class="text-gray-300 hover:text-white">Comptable</a>
+                {% endif %}
+                <a href="{{ path('app_fiche_frais') }}" class="text-gray-300 hover:text-white">Mes fiches de frais</a>
+                <a href="{{ path('app_saisir_fiche') }}" class="text-gray-300 hover:text-white">Saisie fiche de frais</a>
+                <a href="{{ path('app_account') }}" class="text-gray-300 hover:text-white">Mon compte</a>
+                {% if app.user %}
+                {% else %}
+                {% endif %}
+                <a href="{{ path('app_logout') }}" class="text-gray-300 hover:text-white">Déconnexion</a>
             </div>
-            <br>
+        </div>
+    </nav>
+    <div class="container mx-auto mt-5 p-4 bg-white shadow-md rounded-lg">
+        <h1 class="text-2xl font-bold mb-4">Fiches de Frais</h1>
+        <turbo-frame id="form_frame">
+            {{ form_start(form, {'attr': {'data-turbo-frame': 'the_frame_fiche', 'class': 'space-y-4'}}) }}
             <div class="form-group">
-                {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                {{ form_label(form.mois, null, {'label_attr': {'class': 'block text-gray-700'}}) }}
+                {{ form_widget(form.mois, {'attr': {'class': 'form-control mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'}}) }}
+            </div>
+            <div class="form-group">
+                {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'}}) }}
             </div>
             {{ form_end(form) }}
         </turbo-frame>
         <br>
         <turbo-frame id="the_frame_fiche">
             {% if ligneFraisForfaits is not empty %}
-                <h2>Eléments forfaitisés</h2>
-                <table class="table">
+                <h2 class="text-xl font-semibold mb-2">Eléments forfaitisés</h2>
+                <table class="table-auto w-full text-left">
                     <thead>
                     <tr>
-                        <th>Forfait Etape</th>
-                        <th>Frais Kilométrique</th>
-                        <th>Nuitée Hôtel</th>
-                        <th>Repas Restaurant</th>
+                        <th class="px-4 py-2">Forfait Etape</th>
+                        <th class="px-4 py-2">Frais Kilométrique</th>
+                        <th class="px-4 py-2">Nuitée Hôtel</th>
+                        <th class="px-4 py-2">Repas Restaurant</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -42,28 +58,28 @@
                             {% set nuitee = nuitee + (ligne.fraisForfait.libelle == 'Nuitée Hôtel' ? ligne.quantite : 0) %}
                             {% set repas = repas + (ligne.fraisForfait.libelle == 'Repas Restaurant' ? ligne.quantite : 0) %}
                         {% endfor %}
-                        <td>{{ etape }}</td>
-                        <td>{{ km }}</td>
-                        <td>{{ nuitee }}</td>
-                        <td>{{ repas }}</td>
+                        <td class="px-4 py-2">{{ etape }}</td>
+                        <td class="px-4 py-2">{{ km }}</td>
+                        <td class="px-4 py-2">{{ nuitee }}</td>
+                        <td class="px-4 py-2">{{ repas }}</td>
                     </tr>
                     </tbody>
                 </table>
-                <h2>Eléments hors forfait</h2>
-                <table class="table">
+                <h2 class="text-xl font-semibold mt-4 mb-2">Eléments hors forfait</h2>
+                <table class="table-auto w-full text-left">
                     <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Libellé</th>
-                        <th>Montant</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Libellé</th>
+                        <th class="px-4 py-2">Montant</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for ligne in ligneFraisHorsForfaits %}
                     <tr>
-                            <td>{{ ligne.date | date('d/m/Y') }}</td>
-                            <td>{{ ligne.libelle }}</td>
-                            <td>{{ ligne.montant }}€</td>
+                        <td class="px-4 py-2">{{ ligne.date | date('d/m/Y') }}</td>
+                        <td class="px-4 py-2">{{ ligne.libelle }}</td>
+                        <td class="px-4 py-2">{{ ligne.montant }}€</td>
                         {% endfor %}
                     </tr>
                     </tbody>
